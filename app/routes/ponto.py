@@ -110,3 +110,20 @@ def solicitar_ajuste():
         "mensagem": "Solicitação de ajuste enviada para o gestor com sucesso!",
         "status": "pendente_ajuste"
     }), 201
+
+    # No app/routes/ponto.py
+@ponto_bp.route('/status-atual', methods=['GET'])
+@jwt_required()
+def status_atual():
+    user_id = get_jwt_identity()
+    # Busca a última batida de hoje
+    ultimo = RegistroPonto.query.filter_by(usuario_id=user_id).order_by(RegistroPonto.timestamp.desc()).first()
+    
+    if not ultimo or ultimo.tipo_registro == 'saida':
+        return jsonify({"status": "desconectado"}), 200
+        
+    return jsonify({
+        "status": "conectado",
+        "ultimo_tipo": ultimo.tipo_registro,
+        "segundos_desde_inicio": 0 # Aqui você poderia calcular a diferença de tempo
+    }), 200

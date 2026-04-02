@@ -25,6 +25,14 @@ def create_app():
     from .routes.gestor import gestor_bp
     app.register_blueprint(gestor_bp, url_prefix='/api/gestor')
 
+    @app.route('/')
+    def index():
+        return {"mensagem": "API do Nexus rodando com sucesso!"}, 200
+
+    @app.route('/favicon.ico')
+    def favicon():
+        return "", 204
+
     with app.app_context():
         db.create_all()
         
